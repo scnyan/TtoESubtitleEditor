@@ -38,7 +38,7 @@ function splitJaClauses(text, maxChars = 34) {
 }
 
 function protectSubtitleText(text) {
-  const phrases = ["Time to Explain", "ブロスタパスPlus", "ブロスタパス", "ストレンジャー・シングス", "スター・パーク", "Supercell Make", "Brawl Talk", "Brawlies", "ゲームプレイ", "ジュエルチップ"];
+  const phrases = ["Time to Explain", "ブロスタパスPlus", "ブロスタパス", "ストレンジャー・シングス", "スター・パーク", "Supercell Make", "Brawl Talk", "Brawlies", "ゲームプレイ側", "ゲームプレイ", "ジュエルチップ"];
   const map = [];
   const store = (value) => {
     const key = String.fromCharCode(0xe000 + map.length);
@@ -53,7 +53,15 @@ function protectSubtitleText(text) {
   return {
     text: output,
     restore(value) {
-      return map.reduce((acc, [key, original]) => acc.replaceAll(key, original), value);
+      let restored = value;
+      for (let pass = 0; pass <= map.length; pass += 1) {
+        const before = restored;
+        map.forEach(([key, original]) => {
+          restored = restored.replaceAll(key, original);
+        });
+        if (restored === before) break;
+      }
+      return restored;
     },
   };
 }

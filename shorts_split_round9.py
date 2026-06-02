@@ -28,6 +28,7 @@ PROTECTED_PHRASES = [
     "League of Legends",
     "Brawl Talk",
     "Brawlies",
+    "ゲームプレイ側",
     "ゲームプレイ",
     "ジュエルチップ",
 ]
@@ -154,8 +155,12 @@ def protect_text(text):
 
 def restore_text(text, mapping):
     output = text
-    for key, value in mapping.items():
-        output = output.replace(key, value)
+    for _ in range(len(mapping) + 1):
+        before = output
+        for key, value in mapping.items():
+            output = output.replace(key, value)
+        if output == before:
+            break
     return output
 
 

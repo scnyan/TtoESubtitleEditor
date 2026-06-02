@@ -182,6 +182,13 @@ MANUAL_TRANSLATION_FIXES = {
     "2535": "ここに来られて嬉しいよ。これからもみんなを楽しませ続けられたらいいなと思っている。",
 }
 
+MANUAL_SHORTS_FIXES = {
+    "19": [
+        "メガクエストもやったし、",
+        "ストレンジャー・シングス関連もゲームプレイ側と協力してかなり担当したよ。",
+    ],
+}
+
 TERM_FIXES = (
     ("ブローラー", "キャラ"),
     ("ナーフ", "弱体化"),
@@ -261,6 +268,26 @@ def main():
 
     for row in data["segments"]:
         refresh_row(row)
+        manual_shorts = MANUAL_SHORTS_FIXES.get(str(row.get("id")))
+        if manual_shorts:
+            start = int(row.get("start_ms", 0))
+            end = int(row.get("end_ms", start + 900))
+            duration = max(900, end - start)
+            weights = [max(4, len(part)) for part in manual_shorts]
+            total = sum(weights)
+            cursor = start
+            segments = []
+            for index, part in enumerate(manual_shorts):
+                if index == len(manual_shorts) - 1:
+                    seg_end = end
+                else:
+                    seg_end = start + round(duration * sum(weights[: index + 1]) / total)
+                    seg_end = max(cursor + 850, min(seg_end, end))
+                segments.append({"text": part, "en": "", "start_ms": cursor, "end_ms": seg_end})
+                cursor = seg_end
+            row["shorts_segments"] = segments
+            row["shorts_units"] = segments
+            row["ja_clauses"] = manual_shorts
 
     for row in data["segments"]:
         flags = issue_flags(row)
