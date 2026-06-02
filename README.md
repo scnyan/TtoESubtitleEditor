@@ -1,4 +1,4 @@
-# TtoE Subtitle Editor
+# TTE Subtitle Editor
 
 Time to Explain subtitle editor for Brawl Stars video subtitles.
 
@@ -8,7 +8,7 @@ Time to Explain subtitle editor for Brawl Stars video subtitles.
 - Edit original/Japanese subtitles, speaker, topic, and display time.
 - Preview subtitles over the source video.
 - Customize subtitle position, width, scale, colors, outline, shadow, and pop animation.
-- Export separate Japanese and English subtitle-only MP4 assets locally.
+- Export separate Japanese and English subtitle-only MP4 assets.
 - Use shorts-friendly subtitle splits without breaking words or stacking multiple speaker blocks.
 
 ## Run Locally
