@@ -3,37 +3,37 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Brawl Subtitle Studio Web</title>
-    <link rel="stylesheet" href="/styles.css" />
+    <title>TtoE Subtitle Editor</title>
+    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <header class="app-header">
       <div>
-        <h1>Brawl Subtitle Studio</h1>
-        <p>List, edit, preview, and export subtitle-only MP4 assets.</p>
+        <h1>TtoE Subtitle Editor</h1>
+        <p>Time to Explain の字幕リスト、編集、プレビュー用ツール</p>
       </div>
       <nav>
-        <button class="tab active" data-page="listPage">List</button>
-        <button class="tab" data-page="editorPage">Editor</button>
-        <a class="button" href="/original_subtitles.csv">Original CSV</a>
-        <a class="button" href="/subtitles_data.csv">JP CSV</a>
-        <a class="button" href="/subtitles_data_excel.csv">Excel CSV</a>
-        <a class="button" href="/speaker_review_report.csv">Speaker Review CSV</a>
+        <button class="tab active" data-page="listPage">リスト</button>
+        <button class="tab" data-page="editorPage">エディター</button>
+        <a class="button" href="./original_subtitles.csv">原文CSV</a>
+        <a class="button" href="./subtitles_data.csv">字幕CSV</a>
+        <a class="button" href="./speaker_review_report.csv">話者確認CSV</a>
       </nav>
     </header>
 
     <main>
       <section id="listPage" class="page active">
         <section class="filters">
-          <input id="searchInput" placeholder="Search original / Japanese / topic / speaker" />
+          <input id="searchInput" placeholder="原文 / 日本語 / 話題 / 話者で検索" />
           <select id="topicFilter"></select>
           <select id="speakerFilter"></select>
-          <input id="startFilter" placeholder="Start 0:00:00" />
-          <input id="endFilter" placeholder="End 2:40:18" />
-          <label class="compact-check"><input id="reviewOnly" type="checkbox" /> Review</label>
+          <input id="startFilter" placeholder="開始 0:00:00" />
+          <input id="endFilter" placeholder="終了 2:40:18" />
+          <label class="compact-check"><input id="reviewOnly" type="checkbox" /> 話者要確認</label>
           <label class="compact-check"><input id="qualityOnly" type="checkbox" /> 品質要確認</label>
-          <button id="clearFilters">Reset</button>
+          <button id="clearFilters">リセット</button>
         </section>
+
         <section class="list-editor-bar">
           <select id="bulkSpeaker">
             <option value="Dani">Dani</option>
@@ -53,6 +53,7 @@
           <button id="deleteRow" type="button">削除</button>
           <button id="markReviewed" type="button">確認済みにする</button>
         </section>
+
         <div class="list-layout">
           <div class="table-wrap">
             <table>
@@ -60,7 +61,7 @@
                 <tr>
                   <th>時間</th>
                   <th>話者</th>
-                  <th>確認</th>
+                  <th>話者確認</th>
                   <th>品質</th>
                   <th>話題</th>
                   <th>日本語</th>
@@ -87,7 +88,7 @@
         <div class="editor-grid">
           <section class="preview-column">
             <div class="video-shell">
-              <video id="video" controls preload="metadata" src="/video"></video>
+              <video id="video" controls preload="metadata" src="./video_preview.mp4"></video>
               <div id="videoSubtitleOverlay" class="video-subtitle-overlay">
                 <div id="videoSubtitleJa" class="video-subtitle-ja"></div>
                 <div id="videoSubtitleEn" class="video-subtitle-en"></div>
@@ -96,7 +97,7 @@
             <div class="transport">
               <button id="prevBtn">前の字幕</button>
               <button id="nextBtn">次の字幕</button>
-              <button id="jumpBtn">動画を字幕位置へ</button>
+              <button id="jumpBtn">字幕位置へ移動</button>
               <button id="youtubeBtn">YouTubeプレビュー</button>
             </div>
             <div id="youtubeWrap" class="youtube-wrap hidden">
@@ -115,7 +116,7 @@
           </section>
 
           <aside class="settings-panel">
-            <div class="selected-meta" id="selectedMeta">No subtitle selected</div>
+            <div class="selected-meta" id="selectedMeta">字幕が選択されていません</div>
             <section class="control-card">
               <h2>表示設定</h2>
               <label>動画サイズ
@@ -127,7 +128,7 @@
               <label>話者表示
                 <select id="speakerMode">
                   <option value="name">名前を表示</option>
-                  <option value="color">色だけで区別</option>
+                  <option value="color">色で区別</option>
                   <option value="none">表示しない</option>
                 </select>
               </label>
@@ -139,7 +140,7 @@
               </label>
               <label class="check-row">
                 <input id="shortsClauseMode" type="checkbox" checked />
-                shorts用の見やすい分割を使う
+                shorts用分割を使う
               </label>
               <label class="check-row">
                 <input id="popAnimation" type="checkbox" checked />
@@ -166,22 +167,22 @@
                 </label>
               </div>
               <div class="color-grid">
-                <label>JP color <input id="jpColor" type="color" value="#ffffff" /></label>
-                <label>EN color <input id="enColor" type="color" value="#ffffff" /></label>
-                <label>BG color <input id="bgColor" type="color" value="#f8fafc" /></label>
-                <label>Outline <input id="outlineColor" type="color" value="#050505" /></label>
-                <label>Shadow <input id="shadowColor" type="color" value="#000000" /></label>
+                <label>JP色 <input id="jpColor" type="color" value="#ffffff" /></label>
+                <label>EN色 <input id="enColor" type="color" value="#ffffff" /></label>
+                <label>背景色 <input id="bgColor" type="color" value="#f8fafc" /></label>
+                <label>枠線 <input id="outlineColor" type="color" value="#050505" /></label>
+                <label>影 <input id="shadowColor" type="color" value="#000000" /></label>
               </div>
-              <label>Outline size <span id="outlineSizeValue">4px</span>
+              <label>枠線サイズ <span id="outlineSizeValue">4px</span>
                 <input id="outlineSize" type="range" min="0" max="16" value="4" />
               </label>
-              <label>Shadow X <span id="shadowXValue">2px</span>
+              <label>影 X <span id="shadowXValue">2px</span>
                 <input id="shadowX" type="range" min="-12" max="18" value="2" />
               </label>
-              <label>Shadow Y <span id="shadowYValue">4px</span>
+              <label>影 Y <span id="shadowYValue">4px</span>
                 <input id="shadowY" type="range" min="0" max="24" value="4" />
               </label>
-              <label>Shadow opacity <span id="shadowOpacityValue">100%</span>
+              <label>影の濃さ <span id="shadowOpacityValue">100%</span>
                 <input id="shadowOpacity" type="range" min="0" max="100" value="100" />
               </label>
               <button id="brawlStylePreset" type="button">ブロスタ風プリセット</button>
@@ -191,30 +192,22 @@
               <h2>字幕編集</h2>
               <label>話者
                 <input id="speakerEdit" list="speakerOptions" />
-              <datalist id="speakerOptions">
-                <option value="Dani"></option>
-                <option value="Quinn"></option>
-                <option value="Adrian"></option>
-                <option value="Gonzalo"></option>
-                <option value="Adam"></option>
-                <option value="Group"></option>
-                <option value="SFX"></option>
-              </datalist>
+                <datalist id="speakerOptions">
+                  <option value="Dani"></option>
+                  <option value="Quinn"></option>
+                  <option value="Adrian"></option>
+                  <option value="Gonzalo"></option>
+                  <option value="Adam"></option>
+                  <option value="Group"></option>
+                  <option value="SFX"></option>
+                </datalist>
               </label>
               <div class="time-grid">
-                <label>開始
-                  <input id="startEdit" />
-                </label>
-                <label>終了
-                  <input id="endEdit" />
-                </label>
+                <label>開始 <input id="startEdit" /></label>
+                <label>終了 <input id="endEdit" /></label>
               </div>
-              <label>話題
-                <input id="topicEdit" />
-              </label>
-              <label>日本語字幕
-                <textarea id="jpEdit" rows="7"></textarea>
-              </label>
+              <label>話題 <input id="topicEdit" /></label>
+              <label>日本語字幕 <textarea id="jpEdit" rows="7"></textarea></label>
               <div class="clause-panel">
                 <div class="clause-head">
                   <strong>shorts用分割</strong>
@@ -227,26 +220,25 @@
                 <button id="applyInlineColor" type="button">選択文字に色を付ける</button>
                 <button id="clearInlineColor" type="button">色指定を消す</button>
               </div>
-              <label>原文字幕
-                <textarea id="enEdit" rows="6"></textarea>
-              </label>
+              <label>原文字幕 <textarea id="enEdit" rows="6"></textarea></label>
               <div class="button-row">
                 <button id="applyEdit">即時反映</button>
-                <button id="saveData">JSON/CSVに保存</button>
+                <button id="saveData">ローカル保存</button>
               </div>
             </section>
 
             <section class="control-card">
               <h2>字幕素材MP4を書き出し</h2>
+              <p class="muted">GitHub Pagesでは書き出し不可。ローカルで `python web_server.py` を起動した時だけ使えます。</p>
               <label>開始 <input id="exportStart" value="0:00:00" /></label>
               <label>終了 <input id="exportEnd" value="2:40:18" /></label>
-              <button id="exportBtn">MP4を書き出す</button>
+              <button id="exportBtn">MP4を書き出し</button>
               <div id="exportStatus" class="muted"></div>
             </section>
           </aside>
         </div>
       </section>
     </main>
-    <script src="/app.js"></script>
+    <script src="./app.js"></script>
   </body>
 </html>

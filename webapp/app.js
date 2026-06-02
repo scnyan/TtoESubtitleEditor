@@ -2,6 +2,7 @@ let data = null;
 let filtered = [];
 let selectedIndex = 0;
 let lastVideoSubtitleKey = "";
+let backendAvailable = false;
 
 const $ = (id) => document.getElementById(id);
 
@@ -277,13 +278,20 @@ async function loadData() {
     const res = await fetch("/api/data");
     if (!res.ok) throw new Error("api unavailable");
     data = await res.json();
+    backendAvailable = true;
   } catch (error) {
     data = await fetch("./subtitles_data.json").then((res) => res.json());
+    backendAvailable = false;
   }
   fillFilters();
   applyFilters();
   selectRow(0);
   $("exportEnd").value = msToTs(data.meta.duration_ms);
+  if (!backendAvailable) {
+    $("saveData").textContent = "静的版では保存不可";
+    $("exportBtn").textContent = "静的版では書き出し不可";
+    $("exportStatus").textContent = "GitHub Pagesでは閲覧専用です。保存とMP4書き出しはローカルサーバーで使えます。";
+  }
 }
 
 function fillFilters() {
@@ -656,6 +664,10 @@ function markReviewed() {
 }
 
 async function saveData() {
+  if (!backendAvailable) {
+    alert("GitHub Pages版は閲覧専用です。保存する場合はPCで python web_server.py を起動してください。");
+    return;
+  }
   applyEdit();
   await fetch("/api/save", {
     method: "POST",
@@ -666,6 +678,10 @@ async function saveData() {
 }
 
 async function exportMp4() {
+  if (!backendAvailable) {
+    $("exportStatus").textContent = "GitHub Pages版ではMP4を書き出せません。PCで python web_server.py を起動してください。";
+    return;
+  }
   applyEdit();
   $("exportStatus").textContent = "書き出し中...";
   const settings = {
