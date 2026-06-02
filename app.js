@@ -41,7 +41,7 @@ function protectSubtitleText(text) {
   const phrases = ["Time to Explain", "ブロスタパスPlus", "ブロスタパス", "ストレンジャー・シングス", "スター・パーク", "Supercell Make", "Brawl Talk", "Brawlies", "ゲームプレイ", "ジュエルチップ"];
   const map = [];
   const store = (value) => {
-    const key = `__KEEP_${map.length}__`;
+    const key = String.fromCharCode(0xe000 + map.length);
     map.push([key, value]);
     return key;
   };

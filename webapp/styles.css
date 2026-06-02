@@ -1,11 +1,11 @@
 @font-face {
   font-family: "Lilita One Local";
-  src: url("/fonts/LilitaOne-Regular.ttf") format("truetype");
+  src: url("./fonts/LilitaOne-Regular.ttf") format("truetype");
 }
 
 @font-face {
   font-family: "Noto CJK Local";
-  src: url("/fonts/NotoSansCJKjp-Black.otf") format("opentype");
+  src: url("./fonts/NotoSansCJKjp-Black.otf") format("opentype");
 }
 
 :root {

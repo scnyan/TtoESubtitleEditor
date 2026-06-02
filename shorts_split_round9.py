@@ -129,7 +129,7 @@ def protect_text(text):
     mapping = {}
 
     def store(value, prefix):
-        key = f"__{prefix}_{len(mapping)}__"
+        key = chr(0xE000 + len(mapping))
         mapping[key] = value
         return key
 
@@ -284,7 +284,7 @@ def merge_bad_edges(pieces):
 
 
 def visible_len(text):
-    return len(re.sub(r"__(?:PHRASE|QUOTE)_\d+__", "QQQQQQ", text or ""))
+    return sum(6 if 0xE000 <= ord(char) <= 0xF8FF else 1 for char in (text or ""))
 
 
 def split_english_for_shorts(text):

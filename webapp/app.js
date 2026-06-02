@@ -41,7 +41,7 @@ function protectSubtitleText(text) {
   const phrases = ["Time to Explain", "ブロスタパスPlus", "ブロスタパス", "ストレンジャー・シングス", "スター・パーク", "Supercell Make", "Brawl Talk", "Brawlies", "ゲームプレイ", "ジュエルチップ"];
   const map = [];
   const store = (value) => {
-    const key = `__KEEP_${map.length}__`;
+    const key = String.fromCharCode(0xe000 + map.length);
     map.push([key, value]);
     return key;
   };
@@ -72,7 +72,7 @@ function splitAtReadableEdges(text) {
       continue;
     }
     current += text[i];
-    if ("。！？!?".includes(text[i]) || (text[i] === "、" && current.length >= 10)) {
+    if ("。！？!?".includes(text[i]) || (text[i] === "、" && current.length >= 18)) {
       output.push(current);
       current = "";
     }
@@ -98,16 +98,16 @@ function splitLongReadableChunk(chunk, maxChars) {
         pos = window.indexOf(word, pos + 1);
       }
     });
-    let cut = cuts.length ? cuts.sort((a, b) => Math.abs(a - 22) - Math.abs(b - 22))[0] : 0;
+    let cut = cuts.length ? cuts.sort((a, b) => Math.abs(a - 24) - Math.abs(b - 24))[0] : 0;
     if (!cut) {
-      for (let i = Math.min(rest.length - 1, maxChars); i >= 10; i -= 1) {
-        if (!badSubtitleBoundary(rest.slice(0, i), rest.slice(i)) && !/[ぁ-んァ-ンーA-Za-z0-9]/.test(rest[i - 1] + rest[i])) {
+      for (let i = Math.min(rest.length - 1, maxChars); i >= 14; i -= 1) {
+        if (!badSubtitleBoundary(rest.slice(0, i), rest.slice(i)) && !/[ぁ-んァ-ンー一-龥A-Za-z0-9]/.test(rest[i - 1] + rest[i])) {
           cut = i;
           break;
         }
       }
     }
-    cut ||= Math.min(rest.length, maxChars);
+    cut ||= rest.length;
     output.push(rest.slice(0, cut).trim());
     rest = rest.slice(cut).replace(/^[、\s]+/, "");
   }
@@ -130,7 +130,7 @@ function mergeBadSubtitleEdges(pieces) {
       return;
     }
     const merged = `${output[output.length - 1]}${piece}`;
-    if ((badSubtitleBoundary(output[output.length - 1], piece) || piece.length <= 6 || output[output.length - 1].length <= 4) && merged.length <= 46) {
+    if ((badSubtitleBoundary(output[output.length - 1], piece) || piece.length <= 8 || output[output.length - 1].length <= 6) && merged.length <= 52) {
       output[output.length - 1] = merged;
     } else {
       output.push(piece);
@@ -149,18 +149,27 @@ function splitEnClauses(text) {
 }
 
 function buildShortsUnits(row) {
-  const clauses = row.ja_clauses || splitJaClauses(row.translation_raw || "");
+  let clauses = row.ja_clauses || splitJaClauses(row.translation_raw || "");
   if (!clauses.length) return [];
   const start = Number(row.start_ms || 0);
   const end = Math.max(start + 900, Number(row.end_ms || start + 900));
   const duration = end - start;
+  const maxUnits = Math.max(1, Math.floor(duration / 900));
+  while (clauses.length > maxUnits) {
+    const merged = [];
+    for (let i = 0; i < clauses.length; i += 2) {
+      merged.push([clauses[i], clauses[i + 1]].filter(Boolean).join(""));
+    }
+    clauses = merged;
+  }
   const weights = clauses.map((clause) => Math.max(4, stripRichText(clause).length));
   const total = weights.reduce((sum, value) => sum + value, 0) || clauses.length;
   let cursor = start;
   return clauses.map((clause, index) => {
     const elapsedWeight = weights.slice(0, index + 1).reduce((sum, value) => sum + value, 0);
     const rawEnd = index === clauses.length - 1 ? end : start + Math.round((duration * elapsedWeight) / total);
-    const unit = { text: clause, start_ms: cursor, end_ms: Math.max(cursor + 550, Math.min(rawEnd, end)) };
+    const unitEnd = index === clauses.length - 1 ? end : Math.min(end, Math.max(cursor + 850, rawEnd));
+    const unit = { text: clause, start_ms: cursor, end_ms: unitEnd };
     cursor = unit.end_ms;
     return unit;
   });
@@ -241,7 +250,7 @@ function activeRowsAt(ms) {
   }
   const direct = data.segments.filter((item) => item.start_ms <= ms && item.end_ms > ms);
   if (direct.length) return suppressTinyOverlaps(direct, ms);
-  return data.segments.filter((item) => item.end_ms < ms && ms - item.end_ms <= 900).slice(-4);
+  return [];
 }
 
 function suppressTinyOverlaps(rows, ms) {
@@ -256,7 +265,13 @@ function suppressTinyOverlaps(rows, ms) {
 }
 
 async function loadData() {
-  data = await fetch("/api/data").then((res) => res.json());
+  try {
+    const res = await fetch("/api/data");
+    if (!res.ok) throw new Error("api unavailable");
+    data = await res.json();
+  } catch (error) {
+    data = await fetch("./subtitles_data.json").then((res) => res.json());
+  }
   fillFilters();
   applyFilters();
   selectRow(0);
@@ -696,9 +711,10 @@ function jumpVideo() {
 
 function renderVideoSubtitles() {
   if (!data) return;
-  const ms = $("video").currentTime * 1000;
+  const video = $("video");
+  const ms = video.currentTime * 1000;
   let rows = activeRowsAt(ms);
-  if (!rows.length && data.segments[selectedIndex]) rows = [data.segments[selectedIndex]];
+  if (!rows.length && video.paused && data.segments[selectedIndex]) rows = [data.segments[selectedIndex]];
   const limited = rows.slice(-1);
   const jaTexts = limited.map((row) => chunkAt(row, ms, "ja"));
   const enTexts = limited.map((row) => chunkAt(row, ms, "en"));
